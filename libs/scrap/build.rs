@@ -216,13 +216,13 @@ fn ffmpeg() {
         .map(|lib| println!("cargo:rustc-link-lib={}", lib))
         .count();
 
-    if target_os == "macos" || target_os == "ios" {
+/*     if target_os == "macos" || target_os == "ios" {
         println!("cargo:rustc-link-lib=framework=CoreFoundation");
         println!("cargo:rustc-link-lib=framework=CoreVideo");
         println!("cargo:rustc-link-lib=framework=CoreMedia");
         println!("cargo:rustc-link-lib=framework=VideoToolbox");
         println!("cargo:rustc-link-lib=framework=AVFoundation");
-    }
+    } */
 }
 */
 
