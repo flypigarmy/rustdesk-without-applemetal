@@ -1,182 +1,258 @@
-<p align="center">
-  <img src="res/logo-header.svg" alt="RustDesk - Your remote desktop"><br>
-  <a href="#raw-steps-to-build">Build</a> •
-  <a href="#how-to-build-with-docker">Docker</a> •
-  <a href="#file-structure">Structure</a> •
-  <a href="#snapshot">Snapshot</a><br>
-  [<a href="docs/README-UA.md">Українська</a>] | [<a href="docs/README-CS.md">česky</a>] | [<a href="docs/README-ZH.md">中文</a>] | [<a href="docs/README-HU.md">Magyar</a>] | [<a href="docs/README-ES.md">Español</a>] | [<a href="docs/README-FA.md">فارسی</a>] | [<a href="docs/README-FR.md">Français</a>] | [<a href="docs/README-DE.md">Deutsch</a>] | [<a href="docs/README-PL.md">Polski</a>] | [<a href="docs/README-ID.md">Indonesian</a>] | [<a href="docs/README-FI.md">Suomi</a>] | [<a href="docs/README-ML.md">മലയാളം</a>] | [<a href="docs/README-JP.md">日本語</a>] | [<a href="docs/README-NL.md">Nederlands</a>] | [<a href="docs/README-IT.md">Italiano</a>] | [<a href="docs/README-RU.md">Русский</a>] | [<a href="docs/README-PTBR.md">Português (Brasil)</a>] | [<a href="docs/README-EO.md">Esperanto</a>] | [<a href="docs/README-KR.md">한국어</a>] | [<a href="docs/README-AR.md">العربي</a>] | [<a href="docs/README-VN.md">Tiếng Việt</a>] | [<a href="docs/README-DA.md">Dansk</a>] | [<a href="docs/README-GR.md">Ελληνικά</a>] | [<a href="docs/README-TR.md">Türkçe</a>] | [<a href="docs/README-NO.md">Norsk</a>] | [<a href="docs/README-RO.md">Română</a>]<br>
-  <b>We need your help to translate this README, <a href="https://github.com/rustdesk/rustdesk/tree/master/src/lang">RustDesk UI</a> and <a href="https://github.com/rustdesk/doc.rustdesk.com">RustDesk Doc</a> to your native language</b>
-</p>
+# RustDesk without Apple Metal
 
-> [!Caution]
-> **Misuse Disclaimer:** <br>
-> The developers of RustDesk do not condone or support any unethical or illegal use of this software. Misuse, such as unauthorized access, control or invasion of privacy, is strictly against our guidelines. The authors are not responsible for any misuse of the application.
+Fork 自 [rustdesk/rustdesk](https://github.com/rustdesk/rustdesk)，移除 Apple Metal / VideoToolbox 依赖，使其能在 **macOS 10.14.6 (Mojave)** 上编译运行。
 
+## 代码改动
 
-Chat with us: [Discord](https://discord.gg/nDceKgxnkV) | [Twitter](https://twitter.com/rustdesk) | [Reddit](https://www.reddit.com/r/rustdesk) | [YouTube](https://www.youtube.com/@rustdesk)
+仅修改 **2 个文件**，共 6 行：
 
-[![RustDesk Server Pro](https://img.shields.io/badge/RustDesk%20Server%20Pro-Advanced%20Features-blue)](https://rustdesk.com/pricing.html)
+### 1. Cargo.toml（删除 2 行）
 
-Yet another remote desktop solution, written in Rust. Works out of the box with no configuration required. You have full control of your data, with no concerns about security. You can use our rendezvous/relay server, [set up your own](https://rustdesk.com/server), or [write your own rendezvous/relay server](https://github.com/rustdesk/rustdesk-server-demo).
+移除 `hwcodec` 和 `vram` feature 声明，编译时不编译硬件编解码模块：
 
-![image](https://user-images.githubusercontent.com/71636191/171661982-430285f0-2e12-4b1d-9957-4a58e375304d.png)
-
-RustDesk welcomes contribution from everyone. See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for help getting started.
-
-[**FAQ**](https://github.com/rustdesk/rustdesk/wiki/FAQ)
-
-[**BINARY DOWNLOAD**](https://github.com/rustdesk/rustdesk/releases)
-
-[**NIGHTLY BUILD**](https://github.com/rustdesk/rustdesk/releases/tag/nightly)
-
-[<img src="https://f-droid.org/badge/get-it-on.png"
-    alt="Get it on F-Droid"
-    height="80">](https://f-droid.org/en/packages/com.carriez.flutter_hbb)
-[<img src="https://flathub.org/api/badge?svg&locale=en"
-    alt="Get it on Flathub"
-    height="80">](https://flathub.org/apps/com.rustdesk.RustDesk)
-
-## Dependencies
-
-Desktop versions use Flutter or Sciter (deprecated) for GUI, this tutorial is for Sciter only, since it is easier and more friendly to start. Check out our [CI](https://github.com/rustdesk/rustdesk/blob/master/.github/workflows/flutter-build.yml) for building Flutter version.
-
-Please download Sciter dynamic library yourself.
-
-[Windows](https://raw.githubusercontent.com/c-smile/sciter-sdk/master/bin.win/x64/sciter.dll) |
-[Linux](https://raw.githubusercontent.com/c-smile/sciter-sdk/master/bin.lnx/x64/libsciter-gtk.so) |
-[macOS](https://raw.githubusercontent.com/c-smile/sciter-sdk/master/bin.osx/libsciter.dylib)
-
-## Raw Steps to build
-
-- Prepare your Rust development env and C++ build env
-
-- Install [vcpkg](https://github.com/microsoft/vcpkg), and set `VCPKG_ROOT` env variable correctly
-
-  - Windows: vcpkg install libvpx:x64-windows-static libyuv:x64-windows-static opus:x64-windows-static aom:x64-windows-static
-  - Linux/macOS: vcpkg install libvpx libyuv opus aom
-
-- run `cargo run`
-
-## [Build](https://rustdesk.com/docs/en/dev/build/)
-
-## How to Build on Linux
-
-### Ubuntu 18 (Debian 10)
-
-```sh
-sudo apt install -y zip g++ gcc git curl wget nasm yasm libgtk-3-dev clang libxcb-randr0-dev libxdo-dev \
-        libxfixes-dev libxcb-shape0-dev libxcb-xfixes0-dev libasound2-dev libpulse-dev cmake make \
-        libclang-dev ninja-build libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libpam0g-dev
+```diff
+-hwcodec = ["scrap/hwcodec"]
+-vram = ["scrap/vram"]
 ```
 
-### openSUSE Tumbleweed
+### 2. libs/scrap/build.rs（注释 7 行）
 
-```sh
-sudo zypper install gcc-c++ git curl wget nasm yasm gcc gtk3-devel clang libxcb-devel libXfixes-devel cmake alsa-lib-devel gstreamer-devel gstreamer-plugins-base-devel xdotool-devel pam-devel
+注释掉 VideoToolbox 等 5 个 Apple 框架的链接，避免在无 Metal 支持的系统上链接失败：
+
+```diff
+-    if target_os == "macos" || target_os == "ios" {
++/*     if target_os == "macos" || target_os == "ios" {
+         println!("cargo:rustc-link-lib=framework=CoreFoundation");
+         println!("cargo:rustc-link-lib=framework=CoreVideo");
+         println!("cargo:rustc-link-lib=framework=CoreMedia");
+         println!("cargo:rustc-link-lib=framework=VideoToolbox");
+         println!("cargo:rustc-link-lib=framework=AVFoundation");
+-    }
++    } */
 ```
 
-### Fedora 28 (CentOS 8)
+**代价**：失去硬件编解码加速，远程桌面画面使用软件编解码。
 
-```sh
-sudo yum -y install gcc-c++ git curl wget nasm yasm gcc gtk3-devel clang libxcb-devel libxdo-devel libXfixes-devel pulseaudio-libs-devel cmake alsa-lib-devel gstreamer1-devel gstreamer1-plugins-base-devel pam-devel
+---
+
+## 构建踩坑全记录（macOS 10.14.6）
+
+以下是在 Mac mini (macOS 10.14.6) 上从零构建 RustDesk 遇到的所有问题及解决方案。
+
+### 一、依赖库缺失与编译
+
+#### 1. vcpkg 只装了 opus，缺 libvpx
+
+```bash
+vcpkg install libvpx
 ```
 
-### Arch (Manjaro)
+**失败**：缺少 NASM 汇编器。
 
-```sh
-sudo pacman -Syu --needed unzip git cmake gcc curl wget yasm nasm zip make pkg-config clang gtk3 xdotool libxcb libxfixes alsa-lib pipewire
+#### 2. Homebrew 安装 nasm 失败
+
+macOS 10.14.6 太旧，Homebrew 已不支持，无法通过 `brew install nasm` 安装。
+
+#### 3. 手动编译 libvpx（绕过汇编器）
+
+利用 vcpkg 已下载的源码，`--target=generic-gnu` 绕过汇编器要求：
+
+```bash
+cd ~/vcpkg/downloads/libvpx-*
+./configure --target=generic-gnu --disable-examples --disable-unit-tests --prefix=$VCPKG_ROOT/installed/x64-osx
+make -j4
+make install
 ```
 
-### Install vcpkg
+编译产物 `libvpx.a`（~2MB）安装到 vcpkg installed 目录。
 
-```sh
-git clone https://github.com/microsoft/vcpkg
-cd vcpkg
-git checkout 2023.04.15
-cd ..
-vcpkg/bootstrap-vcpkg.sh
-export VCPKG_ROOT=$HOME/vcpkg
-vcpkg/vcpkg install libvpx libyuv opus aom
+#### 4. 缺 libaom
+
+aom 已编译在 `/usr/local/lib/`（不在 vcpkg 目录），需手动复制：
+
+```bash
+cp /usr/local/lib/libaom.a $VCPKG_ROOT/installed/x64-osx/lib/
+cp -r /usr/local/include/aom $VCPKG_ROOT/installed/x64-osx/include/
 ```
 
-### Fix libvpx (For Fedora)
+#### 5. 缺 libyuv
 
-```sh
-cd vcpkg/buildtrees/libvpx/src
-cd *
-./configure
-sed -i 's/CFLAGS+=-I/CFLAGS+=-fPIC -I/g' Makefile
-sed -i 's/CXXFLAGS+=-I/CXXFLAGS+=-fPIC -I/g' Makefile
-make
-cp libvpx.a $HOME/vcpkg/installed/x64-linux/lib/
-cd
+libyuv 同样在 `/usr/local/lib/` 但不在 vcpkg，需手动复制：
+
+```bash
+cp /usr/local/lib/libyuv.a $VCPKG_ROOT/installed/x64-osx/lib/
+cp -r /usr/local/include/libyuv $VCPKG_ROOT/installed/x64-osx/include/
 ```
 
-### Build
+> **教训**：vcpkg 不是唯一的库来源。如果系统已有 `/usr/local` 下的静态库，直接复制到 vcpkg installed 目录即可，不必重复编译。
 
-```sh
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source $HOME/.cargo/env
-git clone --recurse-submodules https://github.com/rustdesk/rustdesk
-cd rustdesk
-mkdir -p target/debug
-wget https://raw.githubusercontent.com/c-smile/sciter-sdk/master/bin.lnx/x64/libsciter-gtk.so
-mv libsciter-gtk.so target/debug
-VCPKG_ROOT=$HOME/vcpkg cargo run
+#### 6. 缺少库文件清单
+
+| 库 | 来源 | 安装方式 |
+|----|------|----------|
+| libvpx | vcpkg 源码手动编译 | `--target=generic-gnu` 绕过 NASM |
+| libaom | `/usr/local/lib/` 已有 | 复制到 vcpkg installed |
+| libyuv | `/usr/local/lib/` 已有 | 复制到 vcpkg installed |
+| opus | vcpkg 正常安装 | `vcpkg install opus` |
+
+---
+
+### 二、打包 App Bundle 踩坑
+
+#### 1. service 二进制未打包进 DMG ❌❌❌（最严重）
+
+**现象**：安装后设备不在线，日志全是 `service: No such file or directory`。
+
+**根因**：macOS 版 RustDesk 有两个进程：
+- **UI 进程**：`RustDesk`（用户界面）
+- **服务进程**：`service`（以 root 运行，通过 LaunchAgent `daemon.plist` 启动）
+
+打包脚本只复制了 `rustdesk` 二进制，遗漏了 `target/release/service`（5.6MB）。服务进程从未启动 → IPC socket 不存在 → 服务端使用默认配置（rs-ny.rustdesk.com）→ `is_public()` 拦截心跳。
+
+**解决**：打包时同时复制 `service` 二进制到 `RustDesk.app/Contents/MacOS/service`。
+
+#### 2. src/ui/ 目录未复制 ❌❌
+
+**现象**：点击"设置永久密码"按钮无反应/不显示。
+
+**根因**：Sciter UI 版本的界面文件在 `src/ui/` 目录。旧版 UI 调用 `handler.permanent_password()` 获取密码，新版 Rust 已改用 `handler.is_local_permanent_password_set()`。打包脚本只替换了二进制，没复制 UI 文件 → 旧 UI 调新 Rust API 失败。
+
+**解决**：打包时复制整个 `src/` 目录到 `RustDesk.app/Contents/MacOS/src/`。
+
+#### 3. RustDesk.sh 启动脚本遗漏
+
+**现象**：直接运行二进制无法正常启动。
+
+**根因**：`RustDesk.app/Contents/MacOS/RustDesk.sh` 是 Sciter 版的启动入口脚本（设置环境变量后启动二进制），打包时遗漏。
+
+**解决**：用旧 app bundle 作模板保留 `RustDesk.sh` 和 `Frameworks/libsciter.dylib`，只替换二进制和 UI 文件。
+
+#### 4. macOS 大小写不敏感陷阱
+
+**现象**：`ln -sf rustdesk RustDesk` 创建符号链接后，二进制文件被覆盖为 0 字节。
+
+**根因**：macOS 文件系统默认大小写不敏感（APFS/HFS+ 均如此），`rustdesk` 和 `RustDesk` 指向同一个文件。`ln -sf rustdesk RustDesk` 不是创建符号链接，而是删除原文件再创建指向自己的链接。
+
+**解决**：不要对大小写不同的同名文件创建符号链接，直接 `cp rustdesk RustDesk`。
+
+---
+
+### 三、签名踩坑
+
+#### 1. 非交互 SSH 无法导入证书到 login keychain
+
+`security import` 到 login keychain 需要用户交互确认（弹窗），SSH 非交互环境下无法完成。
+
+**解决**：创建临时 keychain：
+
+```bash
+security create-keychain -p temp123 /tmp/sign.keychain
+security unlock-keychain -p temp123 /tmp/sign.keychain
+security import cert.p12 -k /tmp/sign.keychain -P password -T /usr/bin/codesign
+security set-key-partition-list -S apple-tool:,apple: -k temp123 /tmp/sign.keychain
 ```
 
-## How to build with Docker
+#### 2. 自签名证书无 codesign 权限
 
-Begin by cloning the repository and building the Docker container:
+导入证书后 `security find-identity` 显示 0 个有效 codesigning identity，原因是证书缺少 codesigning 扩展。
 
-```sh
-git clone https://github.com/rustdesk/rustdesk
-cd rustdesk
-git submodule update --init --recursive
-docker build -t "rustdesk-builder" .
+**解决**：使用 `codesign --sign -`（ad-hoc 签名）或创建带 codesigning 扩展的证书。
+
+---
+
+### 四、Git 子模块损坏
+
+**现象**：`libs/hbb_common` 目录为空，`.git` 丢失。
+
+**解决**：重新 clone 整个仓库（`git clone --recurse-submodules`），旧仓库移至 `rustdesk_old`。
+
+---
+
+### 五、网络相关问题
+
+#### 1. 企业防火墙拦截高端口
+
+Mac mini 所在网络网关 `172.30.1.254` 对 TCP 高端口（21114-21117）出站做白名单，仅放行标准端口（22/80/443），但 UDP 21116 畅通。
+
+**结果**：RustDesk UDP 注册正常（rendezvous），但 TCP 21114 HTTP API 心跳超时。
+
+**解决**：服务器端修改 Linux 内核参数启用双 IP 跨网段宽松模式。
+
+#### 2. Git 代理配置失效
+
+Mac mini git 全局配置了 `http.proxy=http://192.168.100.106:10809`，但该代理不可用导致 `git push` 报 `Connection refused`。
+
+**解决**：
+
+```bash
+git config --global --unset http.proxy
+git config --global --unset https.proxy
 ```
 
-Then, each time you need to build the application, run the following command:
+---
 
-```sh
-docker run --rm -it -v $PWD:/home/user/rustdesk -v rustdesk-git-cache:/home/user/.cargo/git -v rustdesk-registry-cache:/home/user/.cargo/registry -e PUID="$(id -u)" -e PGID="$(id -g)" rustdesk-builder
+### 六、远程操作注意事项
+
+#### 1. PowerShell 变量展开
+
+通过 PowerShell 发 SSH 命令时，`$HOME`、`$port` 等变量会被 PowerShell 先展开，导致远端命令异常。
+
+**解决**：用单引号包裹，或用 base64 编码传输脚本：
+
+```bash
+echo SCRIPT_BASE64 | base64 -D > /tmp/script.sh && bash /tmp/script.sh
 ```
 
-Note that the first build may take longer before dependencies are cached, subsequent builds will be faster. Additionally, if you need to specify different arguments to the build command, you may do so at the end of the command in the `<OPTIONAL-ARGS>` position. For instance, if you wanted to build an optimized release version, you would run the command above followed by `--release`. The resulting executable will be available in the target folder on your system, and can be run with:
+#### 2. SSH 长命令超时
 
-```sh
-target/debug/rustdesk
+SSH 会话执行长耗时命令（如编译、下载）容易被 SIGKILL 终止。
+
+**解决**：用 `nohup` 后台运行 + 轮询结果文件：
+
+```bash
+nohup long_command > /tmp/output.log 2>&1 &
+# 后续检查
+cat /tmp/output.log
 ```
 
-Or, if you're running a release executable:
+---
 
-```sh
-target/release/rustdesk
+## 完整打包脚本要点
+
+正确的打包流程应包含：
+
+```
+RustDesk.app/
+├── Contents/
+│   ├── Info.plist
+│   ├── MacOS/
+│   │   ├── RustDesk          ← 主二进制（25MB）
+│   │   ├── service           ← 服务二进制（5.6MB）⚠ 必须包含
+│   │   └── RustDesk.sh       ← Sciter 版启动脚本 ⚠ 必须包含
+│   ├── Frameworks/
+│   │   └── libsciter.dylib   ← Sciter UI 引擎 ⚠ 必须包含
+│   ├── Resources/
+│   │   └── entitlements.plist
+│   └── src/
+│       └── ui/               ← Sciter UI 文件 ⚠ 必须包含
+│           ├── index.tis
+│           ├── ...
 ```
 
-Please ensure that you run these commands from the root of the RustDesk repository, or the application may not find the required resources. Also note that other cargo subcommands such as `install` or `run` are not currently supported via this method as they would install or run the program inside the container instead of the host.
+## 构建环境
 
-## File Structure
+| 项目 | 版本/路径 |
+|------|-----------|
+| macOS | 10.14.6 (Mojave) |
+| Xcode | 10.3 |
+| Rust | stable (via rustup) |
+| vcpkg | 2023.04.15 |
+| 编译时间 | ~9 分钟（4 核） |
+| 产物大小 | rustdesk 25MB + service 5.6MB |
+| DMG 大小 | ~37-38MB |
 
-- **[libs/hbb_common](https://github.com/rustdesk/rustdesk/tree/master/libs/hbb_common)**: video codec, config, tcp/udp wrapper, protobuf, fs functions for file transfer, and some other utility functions
-- **[libs/scrap](https://github.com/rustdesk/rustdesk/tree/master/libs/scrap)**: screen capture
-- **[libs/enigo](https://github.com/rustdesk/rustdesk/tree/master/libs/enigo)**: platform specific keyboard/mouse control
-- **[libs/clipboard](https://github.com/rustdesk/rustdesk/tree/master/libs/clipboard)**: file copy and paste implementation for Windows, Linux, macOS.
-- **[src/ui](https://github.com/rustdesk/rustdesk/tree/master/src/ui)**: obsolete Sciter UI (deprecated)
-- **[src/server](https://github.com/rustdesk/rustdesk/tree/master/src/server)**: audio/clipboard/input/video services, and network connections
-- **[src/client.rs](https://github.com/rustdesk/rustdesk/tree/master/src/client.rs)**: start a peer connection
-- **[src/rendezvous_mediator.rs](https://github.com/rustdesk/rustdesk/tree/master/src/rendezvous_mediator.rs)**: Communicate with [rustdesk-server](https://github.com/rustdesk/rustdesk-server), wait for remote direct (TCP hole punching) or relayed connection
-- **[src/platform](https://github.com/rustdesk/rustdesk/tree/master/src/platform)**: platform specific code
-- **[flutter](https://github.com/rustdesk/rustdesk/tree/master/flutter)**: Flutter code for desktop and mobile
-- **[flutter/web/js](https://github.com/rustdesk/rustdesk/tree/master/flutter/web/v1/js)**: JavaScript for Flutter web client
+## Fork 信息
 
-## Screenshots
-
-![Connection Manager](https://github.com/rustdesk/rustdesk/assets/28412477/db82d4e7-c4bc-4823-8e6f-6af7eadf7651)
-
-![Connected to a Windows PC](https://github.com/rustdesk/rustdesk/assets/28412477/9baa91e9-3362-4d06-aa1a-7518edcbd7ea)
-
-![File Transfer](https://github.com/rustdesk/rustdesk/assets/28412477/39511ad3-aa9a-4f8c-8947-1cce286a46ad)
-
-![TCP Tunneling](https://github.com/rustdesk/rustdesk/assets/28412477/78e8708f-e87e-4570-8373-1360033ea6c5)
-
+- 上游仓库：[rustdesk/rustdesk](https://github.com/rustdesk/rustdesk)
+- 本 Fork 仅用于在无 Apple Metal 支持的旧 macOS 上构建 RustDesk
+- 代码改动最小化，仅移除编译依赖，不改变功能逻辑
