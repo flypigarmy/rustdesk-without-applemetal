@@ -146,10 +146,10 @@ cp -r /usr/local/include/libyuv $VCPKG_ROOT/installed/x64-osx/include/
 **解决**：创建临时 keychain：
 
 ```bash
-security create-keychain -p temp123 /tmp/sign.keychain
-security unlock-keychain -p temp123 /tmp/sign.keychain
-security import cert.p12 -k /tmp/sign.keychain -P password -T /usr/bin/codesign
-security set-key-partition-list -S apple-tool:,apple: -k temp123 /tmp/sign.keychain
+security create-keychain -p <keychain-password> /tmp/sign.keychain
+security unlock-keychain -p <keychain-password> /tmp/sign.keychain
+security import cert.p12 -k /tmp/sign.keychain -P <p12-password> -T /usr/bin/codesign
+security set-key-partition-list -S apple-tool:,apple: -k <keychain-password> /tmp/sign.keychain
 ```
 
 #### 2. 自签名证书无 codesign 权限
@@ -172,7 +172,7 @@ security set-key-partition-list -S apple-tool:,apple: -k temp123 /tmp/sign.keych
 
 #### 1. 企业防火墙拦截高端口
 
-Mac mini 所在网络网关 `172.30.1.254` 对 TCP 高端口（21114-21117）出站做白名单，仅放行标准端口（22/80/443），但 UDP 21116 畅通。
+Mac mini 所在企业网络网关对 TCP 高端口（21114-21117）出站做白名单，仅放行标准端口（22/80/443），但 UDP 21116 畅通。
 
 **结果**：RustDesk UDP 注册正常（rendezvous），但 TCP 21114 HTTP API 心跳超时。
 
@@ -180,7 +180,7 @@ Mac mini 所在网络网关 `172.30.1.254` 对 TCP 高端口（21114-21117）出
 
 #### 2. Git 代理配置失效
 
-Mac mini git 全局配置了 `http.proxy=http://192.168.100.106:10809`，但该代理不可用导致 `git push` 报 `Connection refused`。
+git 全局配置了失效的 HTTP 代理（`http.proxy` 指向不可达的内网地址），导致 `git push` 报 `Connection refused`。
 
 **解决**：
 
